@@ -1,7 +1,30 @@
-import {Controller, Get, Header, HttpCode, Req, Res, Headers, Post, Param} from '@nestjs/common';
+import {Controller, Get, Header, HttpCode, Req, Res, Headers, Post, Param, Body} from '@nestjs/common';
+import {UsuarioService} from './usuario.service';
 
 @Controller('usuario')
 export class UsuarioController {
+
+    constructor( // Inyectando Dependencias (Servicios)
+        private _usuarioService: UsuarioService,
+    ) {
+    }
+
+    @Post('')
+    crearUsuario(
+        @Body()
+            parametrosCuerpo
+    ) {
+        return this._usuarioService.usuarioEntity.save({
+            nombre: parametrosCuerpo.nombre
+        });
+    }
+
+    @Post('usuarios')
+    obtenerUsuarios() {
+        return this._usuarioService.usuarioEntity.find();
+    }
+
+
     @Get('hola')
     @HttpCode(200)
     @Header('Cache-Control', 'none')
@@ -42,7 +65,7 @@ export class UsuarioController {
             parametrosRuta,
         @Req()
             request,
-        @Res({passthrough:true})
+        @Res({passthrough: true})
             response,
     ) {
         console.log(request.cookies); // valor de todas las cookies
@@ -51,4 +74,6 @@ export class UsuarioController {
         return 'Cookie con nombre ' + parametrosRuta.nombre + ' seteada'; // con passthrough
         // response.send('Cookie con nombre ' + parametrosRuta.nombre + ' seteada') ; // sin passthrough
     }
+
+
 }
