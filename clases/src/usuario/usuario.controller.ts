@@ -19,9 +19,9 @@ export class UsuarioController {
         });
     }
 
-    @Post('usuarios')
+    @Get('usuarios')
     obtenerUsuarios() {
-        return this._usuarioService.usuarioEntity.find();
+        return this._usuarioService.usuarioEntity.findAndCount();
     }
 
 
