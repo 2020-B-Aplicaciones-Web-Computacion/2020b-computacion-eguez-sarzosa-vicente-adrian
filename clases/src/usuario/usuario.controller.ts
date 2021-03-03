@@ -1,5 +1,7 @@
-import {Controller, Get, Header, HttpCode, Req, Res, Headers, Post, Param, Body} from '@nestjs/common';
+import {Controller, Get, Header, HttpCode, Req, Res, Headers, Post, Param, Body, Query} from '@nestjs/common';
 import {UsuarioService} from './usuario.service';
+import {FindConditions, FindManyOptions, Like} from 'typeorm';
+import {UsuarioEntity} from './usuario.entity';
 
 @Controller('usuario')
 export class UsuarioController {
@@ -15,13 +17,67 @@ export class UsuarioController {
             parametrosCuerpo
     ) {
         return this._usuarioService.usuarioEntity.save({
-            nombre: parametrosCuerpo.nombre
+            nombre: parametrosCuerpo.nombre,
+            apellido: parametrosCuerpo.apellido
         });
     }
 
     @Get('usuarios')
-    obtenerUsuarios() {
-        return this._usuarioService.usuarioEntity.findAndCount();
+    async obtenerUsuarios(
+        @Query()
+            parametrosConsulta,
+        @Res()
+            response
+    ) {
+        let take = 10; // dame solo 10 registros
+        let skip = 0; // me salto 0 registros
+        let order = 'ASC'; // me salto 0 registros
+        if (parametrosConsulta.skip) {
+            skip = parametrosConsulta.skip;
+        }
+        if (parametrosConsulta.take) {
+            take = parametrosConsulta.take
+        }
+        if (parametrosConsulta.order) {
+            order = parametrosConsulta.order as 'ASC' | 'DESC';
+        }
+
+        let consultaWhereAND: FindConditions<UsuarioEntity>[] = [
+            {
+                id: 4, // and
+                nombre: 'Carlos' // and ....
+            }
+        ];
+        // WHERE usuario.id = 4 AND usuario.nombre = 'Carlos'
+        let consultaWhereOR: FindConditions<UsuarioEntity>[] = [
+            {
+                nombre: Like(
+                    parametrosConsulta.busqueda ? parametrosConsulta.busqueda : '%%'
+                ),
+                // estado:'SOLTERO' // Cuando se repiten en los objetos es un AND
+            }, // OR
+            {
+                apellido: Like(parametrosConsulta.busqueda ? parametrosConsulta.busqueda : '%%'
+                ),
+                // estado:'SOLTERO' // Cuando se repiten en los objetos es un AND
+            }
+        ];
+        // WHERE (usuario.nombre = 'Carlos' AND usuario.estado = 'SOLTERO') OR
+        // (usuario.apellido LIKE '%Ca%' AND usuario.estado = 'SOLTERO')
+        let consulta: FindManyOptions<UsuarioEntity> = {
+            where: consultaWhereOR,
+            take: take,
+            skip: skip,
+            order: {
+                id: order === 'ASC' ? 'ASC' : 'DESC',
+            }
+        };
+
+        let datos = await this._usuarioService.usuarioEntity.findAndCount(consulta);
+        response.render('inicio', {
+            datos: datos
+        })
+
     }
 
 

@@ -11,4 +11,12 @@ export class UsuarioEntity {
         name: 'USU_NOMBRE'
     })
     nombre: string
+
+    @Column({
+        type: 'varchar',
+        length: 100,
+        nullable: false,
+        name: 'USU_APELLIDO'
+    })
+    apellido: string
 }
