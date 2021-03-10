@@ -1,4 +1,5 @@
-import {Column, Entity, PrimaryGeneratedColumn} from 'typeorm';
+import {Column, Entity, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
+import {MascotaEntity} from '../mascota/mascota.entity';
 
 @Entity('EPN_USUARIO')
 export class UsuarioEntity {
@@ -18,5 +19,31 @@ export class UsuarioEntity {
         nullable: false,
         name: 'USU_APELLIDO'
     })
-    apellido: string
+    apellido: string;
+
+    // OneToMany (Papa) UsuarioEntity
+    @OneToMany(
+        type => MascotaEntity, // Clase de le entidad hijo
+        mascota => mascota.fkUsuario)
+    mascotas: MascotaEntity[];
+
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

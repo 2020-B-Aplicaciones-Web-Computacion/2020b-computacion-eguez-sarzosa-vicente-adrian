@@ -2,6 +2,7 @@ import {Module} from '@nestjs/common';
 import {MascotaService} from './mascota.service';
 import {MascotaEntity} from './mascota.entity';
 import {TypeOrmModule} from '@nestjs/typeorm';
+import {MascotaController} from './mascota.controller';
 
 // @Decorador()
 @Module({
@@ -12,7 +13,7 @@ import {TypeOrmModule} from '@nestjs/typeorm';
         )
     ],
     controllers: [ // Controladores
-
+        MascotaController,
     ],
     providers: [ // Servicios DECLARADOS
         MascotaService

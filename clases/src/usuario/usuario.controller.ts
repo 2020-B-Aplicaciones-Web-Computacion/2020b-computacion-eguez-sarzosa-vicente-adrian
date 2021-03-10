@@ -11,6 +11,32 @@ export class UsuarioController {
     ) {
     }
 
+    @Get('crear-usuario')
+    crearUsuarioVista(
+        @Res()
+        response,
+    ){
+        response.render('usuarios/crear');
+    }
+
+    @Post('crear-usuario')
+    async crearUsuarioDesdeVista(
+        @Body() parametrosCuerpo,
+        @Res() response,
+    ){
+       const respuesta = await this._usuarioService.usuarioEntity.save({
+            nombre: parametrosCuerpo.nombre,
+            apellido: parametrosCuerpo.apellido
+        });
+       response.redirect('/usuario/usuarios?mensaje=Se creo el usuario ' + parametrosCuerpo.nombre)
+    }
+
+
+
+
+
+
+
     @Post('')
     crearUsuario(
         @Body()
@@ -75,7 +101,8 @@ export class UsuarioController {
 
         let datos = await this._usuarioService.usuarioEntity.findAndCount(consulta);
         response.render('inicio', {
-            datos: datos
+            datos: datos,
+            parametrosConsulta: parametrosConsulta,
         })
 
     }
